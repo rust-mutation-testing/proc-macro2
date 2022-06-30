@@ -28,7 +28,8 @@ features = ["span-locations"]
 unicode-ident = "1.0"
 
 [dev-dependencies]
-quote = { version = "1.0", default_features = false }
+# NOTE(mutest): quote is only used for doc tests, which we do not support.
+# quote = { version = "1.0", default_features = false }
 
 [features]
 proc-macro = []
@@ -42,7 +43,8 @@ span-locations = []
 nightly = []
 
 [workspace]
-members = ["benches/bench-libproc-macro", "tests/ui"]
+# NOTE(mutest): Integration tests and benchmarks are not supported.
+members = []
 
 [patch.crates-io]
 # Our doc tests depend on quote which depends on proc-macro2. Without this line,

@@ -1,4 +1,4 @@
-use proc_macro2::{Delimiter, Literal, Spacing, TokenStream, TokenTree};
+use crate::{Delimiter, Literal, Spacing, TokenStream, TokenTree};
 
 // #[doc = "..."] -> "..."
 fn lit_of_outer_doc_comment(tokens: &TokenStream) -> Literal {
@@ -68,34 +68,38 @@ fn incomplete() {
     assert!("/*/".parse::<TokenStream>().is_err());
 }
 
+// HACK(mutest): The rustc test harness generates a `lit` const descriptor, which clashes with the `lit` locals. We can
+//               fix these for now by using a different name for the locals.
 #[test]
 fn lit() {
     let stream = "/// doc".parse::<TokenStream>().unwrap();
-    let lit = lit_of_outer_doc_comment(&stream);
-    assert_eq!(lit.to_string(), "\" doc\"");
+    let l_lit = lit_of_outer_doc_comment(&stream);
+    assert_eq!(l_lit.to_string(), "\" doc\"");
 
     let stream = "//! doc".parse::<TokenStream>().unwrap();
-    let lit = lit_of_inner_doc_comment(&stream);
-    assert_eq!(lit.to_string(), "\" doc\"");
+    let l_lit = lit_of_inner_doc_comment(&stream);
+    assert_eq!(l_lit.to_string(), "\" doc\"");
 
     let stream = "/** doc */".parse::<TokenStream>().unwrap();
-    let lit = lit_of_outer_doc_comment(&stream);
-    assert_eq!(lit.to_string(), "\" doc \"");
+    let l_lit = lit_of_outer_doc_comment(&stream);
+    assert_eq!(l_lit.to_string(), "\" doc \"");
 
     let stream = "/*! doc */".parse::<TokenStream>().unwrap();
-    let lit = lit_of_inner_doc_comment(&stream);
-    assert_eq!(lit.to_string(), "\" doc \"");
+    let l_lit = lit_of_inner_doc_comment(&stream);
+    assert_eq!(l_lit.to_string(), "\" doc \"");
 }
 
+// HACK(mutest): The rustc test harness generates a `lit` const descriptor, which clashes with the `lit` locals. We can
+//               fix these for now by using a different name for the locals.
 #[test]
 fn carriage_return() {
     let stream = "///\r\n".parse::<TokenStream>().unwrap();
-    let lit = lit_of_outer_doc_comment(&stream);
-    assert_eq!(lit.to_string(), "\"\"");
+    let l_lit = lit_of_outer_doc_comment(&stream);
+    assert_eq!(l_lit.to_string(), "\"\"");
 
     let stream = "/**\r\n*/".parse::<TokenStream>().unwrap();
-    let lit = lit_of_outer_doc_comment(&stream);
-    assert_eq!(lit.to_string(), "\"\\r\\n\"");
+    let l_lit = lit_of_outer_doc_comment(&stream);
+    assert_eq!(l_lit.to_string(), "\"\\r\\n\"");
 
     "///\r".parse::<TokenStream>().unwrap_err();
     "///\r \n".parse::<TokenStream>().unwrap_err();

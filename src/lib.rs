@@ -118,6 +118,9 @@ compile_error! {"\
 #[cfg(use_proc_macro)]
 extern crate proc_macro;
 
+#[cfg(test)]
+mod tests;
+
 mod marker;
 mod parse;
 
